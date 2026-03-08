@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { IconContext } from '@phosphor-icons/react';
+import Navbar from './Navbar';
+import Footer from './Footer';
 
 export default function Layout() {
   const [isDark, setIsDark] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -26,9 +28,13 @@ export default function Layout() {
           <div className="absolute bottom-[-20%] left-[20%] w-[50%] h-[50%] rounded-full bg-blue-500/20 dark:bg-blue-500/10 blur-[120px] mix-blend-screen" />
         </div>
 
-        <main id="main-content" className="relative z-10">
+        <Navbar isDark={isDark} toggleTheme={toggleTheme} />
+
+        <main id="main-content" className="relative z-10 pt-16">
           <Outlet context={{ isDark, toggleTheme }} />
         </main>
+
+        <Footer />
       </div>
     </IconContext.Provider>
   );
