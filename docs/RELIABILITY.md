@@ -2,7 +2,7 @@
 
 ## What Reliable Means Here
 
-In `codexaudit`, reliability means:
+In `aigiscode`, reliability means:
 - findings are reproducible from the indexed codebase
 - project-specific behavior is configurable outside core code
 - policy tuning cannot silently worsen architectural signal

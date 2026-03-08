@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from codexaudit.graph.deadcode import (
+from aigiscode.graph.deadcode import (
     _extract_runtime_php_class_references,
     analyze_dead_code,
     find_abandoned_classes,
 )
-from codexaudit.indexer.store import IndexStore
-from codexaudit.models import (
+from aigiscode.indexer.store import IndexStore
+from aigiscode.models import (
     DependencyInfo,
     DependencyType,
     FileInfo,
@@ -17,11 +17,11 @@ from codexaudit.models import (
     SymbolType,
     Visibility,
 )
-from codexaudit.policy.models import DeadCodePolicy
+from aigiscode.policy.models import DeadCodePolicy
 
 
 def _make_store(project_root: Path) -> IndexStore:
-    store = IndexStore(project_root / ".codexaudit" / "codexaudit.db")
+    store = IndexStore(project_root / ".aigiscode" / "aigiscode.db")
     store.initialize()
     return store
 

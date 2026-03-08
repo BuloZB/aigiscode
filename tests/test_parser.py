@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from codexaudit.indexer.parser import discover_unsupported_source_files, parse_file
-from codexaudit.models import CodexAuditConfig, DependencyType, Language
+from aigiscode.indexer.parser import discover_unsupported_source_files, parse_file
+from aigiscode.models import AigisCodeConfig, DependencyType, Language
 
 
 def test_discover_unsupported_source_files_excludes_supported_python(
@@ -23,7 +23,7 @@ def test_discover_unsupported_source_files_excludes_supported_python(
     (project_root / "cmd.go").write_text("package main\n", encoding="utf-8")
 
     breakdown = discover_unsupported_source_files(
-        CodexAuditConfig(project_path=project_root)
+        AigisCodeConfig(project_path=project_root)
     )
 
     assert breakdown == {"go": 1}

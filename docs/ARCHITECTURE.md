@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`codexaudit` evaluates codebases in a way that is:
+`aigiscode` evaluates codebases in a way that is:
 - machine-readable
 - policy-driven
 - adaptable across projects
@@ -35,7 +35,7 @@ Current parsing backends:
 - `tree-sitter` for PHP, TypeScript, JavaScript, and Vue
 - Python `ast` for Python source
 
-Storage is SQLite in `.codexaudit/codexaudit.db`.
+Storage is SQLite in `.aigiscode/aigiscode.db`.
 
 Incremental indexing prunes stale file rows automatically. When parser behavior changes, `analyze --reset` is the explicit full-refresh path.
 
@@ -81,7 +81,7 @@ Current hardwiring design is precision-first:
 
 ### 4. Rule Filtering
 
-Saved rules in `.codexaudit/rules.json` pre-filter known false positives.
+Saved rules in `.aigiscode/rules.json` pre-filter known false positives.
 
 Rules are the durable memory of prior audits. They should stay narrow and explainable.
 

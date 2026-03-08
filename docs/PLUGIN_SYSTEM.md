@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The plugin system exists to keep `codexaudit` core logic generic.
+The plugin system exists to keep `aigiscode` core logic generic.
 
 Different codebases have different:
 - entry points
@@ -100,7 +100,7 @@ Policy is merged in this order:
 2. explicitly selected plugins from `-P`
 3. auto-detected plugins such as `laravel` and `newerp`
 4. external plugin modules from `--plugin-module`
-5. project file `.codexaudit/policy.json`
+5. project file `.aigiscode/policy.json`
 6. ad-hoc `--policy-file`
 
 Later layers override earlier layers. Lists are deduplicated during normalization.
@@ -123,7 +123,7 @@ Later layers override earlier layers. Lists are deduplicated during normalizatio
 External Python modules can generate policy dynamically:
 
 ```bash
-codexaudit analyze /repo --plugin-module ./my_plugin.py
+aigiscode analyze /repo --plugin-module ./my_plugin.py
 ```
 
 Contract:
@@ -163,7 +163,7 @@ def build_report_extensions(report, graph, store, project_path, policy):
 `refine_contract_lookup` may return a `ContractLookup` or a `dict` patch with keys like `routes`, `hooks`, `registered_keys`, `symbolic_literals`, `env_keys`, and `config_keys`.
 `refine_hardwiring_findings` runs before the final hardwiring result is assembled, so framework plugins can demote or remove category-specific noise without forking detector core.
 `build_policy_patch` must return a `dict`. Runtime hooks may return the refined result object or `None` to leave it unchanged.
-`build_report_extensions` payloads are emitted under `codexaudit-report.json.extensions` and in the Markdown report.
+`build_report_extensions` payloads are emitted under `aigiscode-report.json.extensions` and in the Markdown report.
 
 Use a plugin module when:
 - a rule depends on repository layout
@@ -187,7 +187,7 @@ An AI agent should prefer changing policy over changing analyzer code when:
 - the distinction can be expressed through an existing policy field
 - the same detector is otherwise useful on other repositories
 
-An AI agent should patch `codexaudit` core only when policy cannot represent the distinction cleanly.
+An AI agent should patch `aigiscode` core only when policy cannot represent the distinction cleanly.
 
 See:
 - [docs/ARCHITECTURE.md](ARCHITECTURE.md)

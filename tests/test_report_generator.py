@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from codexaudit.models import GraphAnalysisResult, ReportData
-from codexaudit.report.generator import generate_json_report, generate_markdown_report
+from aigiscode.models import GraphAnalysisResult, ReportData
+from aigiscode.report.generator import generate_json_report, generate_markdown_report
 
 
 def test_report_includes_detector_coverage_warning() -> None:

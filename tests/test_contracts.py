@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from codexaudit.indexer.store import IndexStore
-from codexaudit.models import FileInfo, Language
-from codexaudit.report.contracts import (
+from aigiscode.indexer.store import IndexStore
+from aigiscode.models import FileInfo, Language
+from aigiscode.report.contracts import (
     ContractLookup,
     build_contract_inventory,
     merge_contract_lookup,
@@ -12,7 +12,7 @@ from codexaudit.report.contracts import (
 
 
 def _make_store(project_root: Path) -> IndexStore:
-    store = IndexStore(project_root / ".codexaudit" / "codexaudit.db")
+    store = IndexStore(project_root / ".aigiscode" / "aigiscode.db")
     store.initialize()
     return store
 

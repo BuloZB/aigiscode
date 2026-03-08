@@ -14,7 +14,7 @@ It is not an automatic approval mechanism.
 ## Command
 
 ```bash
-codexaudit analyze /path/to/project --analytical-mode
+aigiscode analyze /path/to/project --analytical-mode
 ```
 
 ## What It Does
@@ -24,7 +24,7 @@ After analysis and report generation:
 1. builds a compact summary of structural and detector metrics
 2. serializes the active merged policy
 3. sends both to Codex with a strict JSON schema
-4. writes the returned patch to `.codexaudit/policy.suggested.json`
+4. writes the returned patch to `.aigiscode/policy.suggested.json`
 
 Patch suggestions can include:
 - graph alias and layer settings
@@ -53,22 +53,22 @@ Recommended sequence:
 1. run baseline
 
 ```bash
-codexaudit analyze ../newerp -P newerp
+aigiscode analyze ../newerp -P newerp
 ```
 
 2. generate a candidate patch
 
 ```bash
-codexaudit analyze ../newerp -P newerp --analytical-mode
+aigiscode analyze ../newerp -P newerp --analytical-mode
 ```
 
 3. inspect the generated file
 
 ```text
-../newerp/.codexaudit/policy.suggested.json
+../newerp/.aigiscode/policy.suggested.json
 ```
 
-4. apply it with `--policy-file` or move it into `.codexaudit/policy.json`
+4. apply it with `--policy-file` or move it into `.aigiscode/policy.json`
 
 5. rerun `report` or `analyze` and sample real findings before accepting it as a new baseline
 

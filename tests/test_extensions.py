@@ -4,21 +4,21 @@ from pathlib import Path
 
 import networkx as nx
 
-from codexaudit.builtin_runtime_plugins import load_builtin_runtime_plugins
-from codexaudit.contracts import ContractLookup
-from codexaudit.extensions import (
+from aigiscode.builtin_runtime_plugins import load_builtin_runtime_plugins
+from aigiscode.contracts import ContractLookup
+from aigiscode.extensions import (
     apply_contract_lookup_plugins,
     apply_graph_result_plugins,
     apply_hardwiring_finding_plugins,
     build_report_extensions,
     load_external_plugins,
 )
-from codexaudit.graph.hardwiring import HardwiringFinding, analyze_hardwiring
-from codexaudit.indexer.store import IndexStore
-from codexaudit.models import FileInfo, GraphAnalysisResult, Language, ReportData
-from codexaudit.policy.models import HardwiringPolicy
-from codexaudit.policy.plugins import resolve_policy
-from codexaudit.report.generator import generate_json_report, generate_markdown_report
+from aigiscode.graph.hardwiring import HardwiringFinding, analyze_hardwiring
+from aigiscode.indexer.store import IndexStore
+from aigiscode.models import FileInfo, GraphAnalysisResult, Language, ReportData
+from aigiscode.policy.models import HardwiringPolicy
+from aigiscode.policy.plugins import resolve_policy
+from aigiscode.report.generator import generate_json_report, generate_markdown_report
 
 
 def test_external_plugin_hooks_extend_policy_and_report(tmp_path: Path) -> None:
@@ -102,7 +102,7 @@ def refine_hardwiring_findings(findings, category, **kwargs):
         encoding="utf-8",
     )
 
-    (project_root / ".codexaudit").mkdir()
+    (project_root / ".aigiscode").mkdir()
     (project_root / "frontend").mkdir()
     (project_root / "app").mkdir()
     (project_root / "frontend" / "compose.ts").write_text(
@@ -114,7 +114,7 @@ def refine_hardwiring_findings(findings, category, **kwargs):
         encoding="utf-8",
     )
 
-    store = IndexStore(project_root / ".codexaudit" / "codexaudit.db")
+    store = IndexStore(project_root / ".aigiscode" / "aigiscode.db")
     store.initialize()
     store.insert_file(
         FileInfo(path="frontend/compose.ts", language=Language.TYPESCRIPT, size=0)
@@ -228,7 +228,7 @@ def test_builtin_runtime_plugins_refine_framework_specific_hardwiring(
 ) -> None:
     project_root = tmp_path / "project"
     project_root.mkdir()
-    (project_root / ".codexaudit").mkdir()
+    (project_root / ".aigiscode").mkdir()
     (project_root / "django" / "core" / "management").mkdir(parents=True)
     (project_root / "src" / "js" / "_enqueues" / "wp").mkdir(parents=True)
     (project_root / "src" / "wp-admin").mkdir(parents=True)
@@ -246,7 +246,7 @@ def test_builtin_runtime_plugins_refine_framework_specific_hardwiring(
         encoding="utf-8",
     )
 
-    store = IndexStore(project_root / ".codexaudit" / "codexaudit.db")
+    store = IndexStore(project_root / ".aigiscode" / "aigiscode.db")
     store.initialize()
     store.insert_file(
         FileInfo(

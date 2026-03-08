@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import networkx as nx
 
-from codexaudit.graph.analyzer import (
+from aigiscode.graph.analyzer import (
     _build_strong_dependency_graph,
     detect_layer_from_path,
     find_god_classes,
     find_orphan_files,
 )
-from codexaudit.indexer.store import IndexStore
-from codexaudit.models import (
+from aigiscode.indexer.store import IndexStore
+from aigiscode.models import (
     ArchitecturalLayer,
     FileInfo,
     Language,
@@ -27,7 +27,7 @@ def test_detect_layer_from_path_recognizes_middleware() -> None:
 
 
 def test_find_god_classes_ignores_small_multi_class_files_and_tests(tmp_path) -> None:
-    store = IndexStore(tmp_path / ".codexaudit" / "codexaudit.db")
+    store = IndexStore(tmp_path / ".aigiscode" / "aigiscode.db")
     store.initialize()
 
     noisy_file_id = store.insert_file(
@@ -89,7 +89,7 @@ def test_find_god_classes_ignores_small_multi_class_files_and_tests(tmp_path) ->
 
 
 def test_find_god_classes_ignores_load_and_register_edges(tmp_path) -> None:
-    store = IndexStore(tmp_path / ".codexaudit" / "codexaudit.db")
+    store = IndexStore(tmp_path / ".aigiscode" / "aigiscode.db")
     store.initialize()
 
     file_id = store.insert_file(
@@ -125,7 +125,7 @@ def test_find_god_classes_ignores_load_and_register_edges(tmp_path) -> None:
 
 
 def test_find_orphan_files_splits_runtime_entry_candidates(tmp_path) -> None:
-    store = IndexStore(tmp_path / ".codexaudit" / "codexaudit.db")
+    store = IndexStore(tmp_path / ".aigiscode" / "aigiscode.db")
     store.initialize()
 
     entry_file_id = store.insert_file(

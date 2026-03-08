@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from codexaudit.graph.builder import build_file_graph
-from codexaudit.indexer.store import IndexStore
-from codexaudit.models import (
+from aigiscode.graph.builder import build_file_graph
+from aigiscode.indexer.store import IndexStore
+from aigiscode.models import (
     DependencyInfo,
     DependencyType,
     FileInfo,
@@ -14,7 +14,7 @@ from codexaudit.models import (
 
 
 def test_build_file_graph_resolves_python_module_and_symbol_imports(tmp_path) -> None:
-    store = IndexStore(tmp_path / ".codexaudit" / "codexaudit.db")
+    store = IndexStore(tmp_path / ".aigiscode" / "aigiscode.db")
     store.initialize()
 
     base_file_id = store.insert_file(
@@ -61,7 +61,7 @@ def test_build_file_graph_resolves_python_module_and_symbol_imports(tmp_path) ->
 
 
 def test_build_file_graph_resolves_php_load_suffix_targets(tmp_path) -> None:
-    store = IndexStore(tmp_path / ".codexaudit" / "codexaudit.db")
+    store = IndexStore(tmp_path / ".aigiscode" / "aigiscode.db")
     store.initialize()
 
     target_file_id = store.insert_file(
@@ -110,7 +110,7 @@ def test_build_file_graph_resolves_php_load_suffix_targets(tmp_path) -> None:
 def test_build_file_graph_resolves_ruby_namespaces_and_require_relative(
     tmp_path,
 ) -> None:
-    store = IndexStore(tmp_path / ".codexaudit" / "codexaudit.db")
+    store = IndexStore(tmp_path / ".aigiscode" / "aigiscode.db")
     store.initialize()
 
     engine_file_id = store.insert_file(
@@ -157,7 +157,7 @@ def test_build_file_graph_resolves_ruby_namespaces_and_require_relative(
 
 
 def test_build_file_graph_resolves_ruby_lexical_namespace_constants(tmp_path) -> None:
-    store = IndexStore(tmp_path / ".codexaudit" / "codexaudit.db")
+    store = IndexStore(tmp_path / ".aigiscode" / "aigiscode.db")
     store.initialize()
 
     image_file_id = store.insert_file(

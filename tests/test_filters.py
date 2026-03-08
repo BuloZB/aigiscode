@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from codexaudit.filters import filter_dead_code_result, filter_hardwiring_result
-from codexaudit.graph.deadcode import DeadCodeFinding, DeadCodeResult
-from codexaudit.graph.hardwiring import HardwiringFinding, HardwiringResult
+from aigiscode.filters import filter_dead_code_result, filter_hardwiring_result
+from aigiscode.graph.deadcode import DeadCodeFinding, DeadCodeResult
+from aigiscode.graph.hardwiring import HardwiringFinding, HardwiringResult
 
 
 def test_filter_dead_code_result_by_category_and_confidence() -> None:

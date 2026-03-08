@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document describes how another AI agent should use `codexaudit` against a repository.
+This document describes how another AI agent should use `aigiscode` against a repository.
 
 The short version:
 - use it as a local evaluation engine
@@ -30,13 +30,13 @@ export ANTHROPIC_API_KEY=...
 ### Baseline
 
 ```bash
-codexaudit analyze /repo
+aigiscode analyze /repo
 ```
 
 If the repo was already indexed and only policy changed:
 
 ```bash
-codexaudit report /repo
+aigiscode report /repo
 ```
 
 ### Read Machine Output
@@ -44,7 +44,7 @@ codexaudit report /repo
 Primary machine interface:
 
 ```text
-/repo/.codexaudit/codexaudit-report.json
+/repo/.aigiscode/aigiscode-report.json
 ```
 
 An agent should prefer the JSON report over Markdown for:
@@ -93,7 +93,7 @@ Current validation lesson:
 ### Encode Narrow Policy
 
 If false positives repeat, add:
-- `.codexaudit/policy.json`
+- `.aigiscode/policy.json`
 - `--policy-file`
 - `--plugin-module`
 
@@ -136,7 +136,7 @@ Triage order:
 Once policy is reasonable:
 
 ```bash
-codexaudit tune /repo -i 2
+aigiscode tune /repo -i 2
 ```
 
 Treat tune output as a candidate, not automatic truth.
@@ -146,7 +146,7 @@ Treat tune output as a candidate, not automatic truth.
 Start minimal:
 
 ```bash
-codexaudit analyze /repo -P generic
+aigiscode analyze /repo -P generic
 ```
 
 Then layer project knowledge:
@@ -202,13 +202,13 @@ If policy is not enough, the same plugin module can also expose:
 - Do not accept lower counts without sampling the new findings.
 - Do not widen suppressions until the pattern is clear.
 - Do not treat AI review as a substitute for reading the referenced code.
-- Do not patch `codexaudit` core when policy can express the rule.
+- Do not patch `aigiscode` core when policy can express the rule.
 
 ## Good Defaults
 
 - use `report` for fast re-evaluation after policy changes
 - use `analyze` when index or AI review must be refreshed
-- store project-local policy in `.codexaudit/policy.json`
+- store project-local policy in `.aigiscode/policy.json`
 - keep plugin modules repository-specific
 - treat `summary.detector_coverage` as a hard warning before trusting detector totals on a newly supported language
 - treat `runtime_entry_candidates` as a policy/plugin opportunity, not immediate dead code
