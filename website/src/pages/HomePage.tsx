@@ -500,7 +500,7 @@ function TerminalDemo() {
   }, [isInView]);
 
   return (
-    <section className="py-20 md:py-32">
+    <section id="demo" className="py-20 md:py-32" aria-label="Terminal demo">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           ref={termRef}
@@ -509,9 +509,11 @@ function TerminalDemo() {
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.6 }}
           className="rounded-2xl bg-zinc-900 dark:bg-zinc-950 border border-zinc-800 dark:border-zinc-800/60 shadow-2xl shadow-black/20 overflow-hidden"
+          role="img"
+          aria-label="Terminal showing AigisCode analyzing a codebase and finding 3 circular dependencies, 12 unused imports, 5 magic strings"
         >
           {/* Title bar */}
-          <div className="flex items-center gap-2 px-5 py-3 border-b border-zinc-800 dark:border-zinc-800/60">
+          <div className="flex items-center gap-2 px-5 py-3 border-b border-zinc-800 dark:border-zinc-800/60" aria-hidden="true">
             <div className="w-3 h-3 rounded-full bg-red-500/80" />
             <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
             <div className="w-3 h-3 rounded-full bg-green-500/80" />
