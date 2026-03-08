@@ -11,22 +11,22 @@ export default function Footer() {
       links: [
         { label: t('footer.features'), href: '#features' },
         { label: t('footer.docs'), href: '#get-started' },
-        { label: t('footer.changelog'), href: 'https://github.com/AigisCode/AigisCode/releases' },
+        { label: t('footer.changelog'), href: 'https://github.com/david-strejc/aigiscode/releases' },
       ],
     },
     {
       title: t('footer.community'),
       links: [
-        { label: 'GitHub', href: 'https://github.com/AigisCode/AigisCode' },
-        { label: t('footer.contributing'), href: 'https://github.com/AigisCode/AigisCode/blob/main/CONTRIBUTING.md' },
-        { label: t('footer.issues'), href: 'https://github.com/AigisCode/AigisCode/issues' },
+        { label: 'GitHub', href: 'https://github.com/david-strejc/aigiscode' },
+        { label: t('footer.contributing'), href: 'https://github.com/david-strejc/aigiscode/blob/main/CONTRIBUTING.md' },
+        { label: t('footer.issues'), href: 'https://github.com/david-strejc/aigiscode/issues' },
       ],
     },
     {
       title: t('footer.legal'),
       links: [
-        { label: t('footer.license'), href: 'https://github.com/AigisCode/AigisCode/blob/main/LICENSE' },
-        { label: t('footer.codeOfConduct'), href: 'https://github.com/AigisCode/AigisCode/blob/main/CODE_OF_CONDUCT.md' },
+        { label: t('footer.license'), href: 'https://github.com/david-strejc/aigiscode/blob/main/LICENSE' },
+        { label: t('footer.codeOfConduct'), href: 'https://github.com/david-strejc/aigiscode/blob/main/CODE_OF_CONDUCT.md' },
       ],
     },
   ];
@@ -48,7 +48,7 @@ export default function Footer() {
           </div>
           <div className="flex items-center gap-3">
             <a
-              href="https://github.com/AigisCode/AigisCode"
+              href="https://github.com/david-strejc/aigiscode"
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/5 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"

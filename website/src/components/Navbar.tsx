@@ -24,7 +24,7 @@ export default function Navbar({ isDark, toggleTheme }: NavbarProps) {
     { href: '#features', label: t('nav.features') },
     { href: '#how-it-works', label: t('nav.howItWorks') },
     { href: '#languages', label: t('nav.languages') },
-    { href: 'https://github.com/AigisCode/AigisCode', label: 'GitHub', external: true },
+    { href: 'https://github.com/david-strejc/aigiscode', label: 'GitHub', external: true },
   ];
 
   return (
