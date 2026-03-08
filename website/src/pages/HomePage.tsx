@@ -1,6 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, useInView } from 'motion/react';
+import { animate, stagger, createTimeline } from 'animejs';
 import {
   ArrowsClockwise,
   Trash,
@@ -13,6 +14,10 @@ import {
   ArrowRight,
   GithubLogo,
 } from '@phosphor-icons/react';
+import ShieldBackground from '@/components/ShieldBackground';
+import ParticleField from '@/components/ParticleField';
+import PipelineSVG from '@/components/PipelineSVG';
+import { prefersReducedMotion, useCountUp } from '@/hooks/useAnime';
 
 /* -------------------------------------------------------------------------- */
 /*  Constants                                                                 */
@@ -31,23 +36,24 @@ const pipelineStageKeys = ['index', 'graph', 'detect', 'rules', 'review', 'repor
 
 const supportedLanguages = ['PHP', 'Python', 'TypeScript', 'JavaScript', 'Vue'];
 
+/* Terminal lines with embedded numeric targets for count-up animation */
 const terminalLines = [
-  { text: '$ aigiscode analyze .', color: 'text-zinc-300', delay: 0 },
-  { text: '', color: '', delay: 0.15 },
-  { text: '  AigisCode v0.1.0', color: 'text-indigo-400', delay: 0.3 },
-  { text: '', color: '', delay: 0.35 },
-  { text: '  Indexing...     127 files parsed', color: 'text-zinc-400', delay: 0.5 },
-  { text: '  Graphing...     843 dependencies mapped', color: 'text-zinc-400', delay: 0.65 },
-  { text: '  Detecting...    dead code, hardwiring', color: 'text-zinc-400', delay: 0.8 },
-  { text: '  Reviewing...    AI classifying 23 findings', color: 'text-zinc-400', delay: 0.95 },
-  { text: '', color: '', delay: 1.05 },
-  { text: '  Results:', color: 'text-emerald-400', delay: 1.15 },
-  { text: '  \u251c\u2500\u2500 3 circular dependencies (strong)', color: 'text-amber-400', delay: 1.3 },
-  { text: '  \u251c\u2500\u2500 12 unused imports', color: 'text-amber-400', delay: 1.45 },
-  { text: '  \u251c\u2500\u2500 5 magic strings', color: 'text-amber-400', delay: 1.6 },
-  { text: '  \u2514\u2500\u2500 3 findings reclassified by AI', color: 'text-emerald-400', delay: 1.75 },
-  { text: '', color: '', delay: 1.85 },
-  { text: '  Report: .aigiscode/aigiscode-report.md', color: 'text-zinc-500', delay: 1.95 },
+  { text: '$ aigiscode analyze .', color: 'text-zinc-300', delay: 0, numbers: [] as { value: number; label: string }[] },
+  { text: '', color: '', delay: 0.15, numbers: [] as { value: number; label: string }[] },
+  { text: '  AigisCode v0.1.0', color: 'text-indigo-400', delay: 0.3, numbers: [] as { value: number; label: string }[] },
+  { text: '', color: '', delay: 0.35, numbers: [] as { value: number; label: string }[] },
+  { text: '  Indexing...     {127} files parsed', color: 'text-zinc-400', delay: 0.5, numbers: [{ value: 127, label: 'files' }] },
+  { text: '  Graphing...     {843} dependencies mapped', color: 'text-zinc-400', delay: 0.65, numbers: [{ value: 843, label: 'deps' }] },
+  { text: '  Detecting...    dead code, hardwiring', color: 'text-zinc-400', delay: 0.8, numbers: [] as { value: number; label: string }[] },
+  { text: '  Reviewing...    AI classifying {23} findings', color: 'text-zinc-400', delay: 0.95, numbers: [{ value: 23, label: 'findings' }] },
+  { text: '', color: '', delay: 1.05, numbers: [] as { value: number; label: string }[] },
+  { text: '  Results:', color: 'text-emerald-400', delay: 1.15, numbers: [] as { value: number; label: string }[] },
+  { text: '  \u251c\u2500\u2500 {3} circular dependencies (strong)', color: 'text-amber-400', delay: 1.3, numbers: [{ value: 3, label: 'circular' }] },
+  { text: '  \u251c\u2500\u2500 {12} unused imports', color: 'text-amber-400', delay: 1.45, numbers: [{ value: 12, label: 'unused' }] },
+  { text: '  \u251c\u2500\u2500 {5} magic strings', color: 'text-amber-400', delay: 1.6, numbers: [{ value: 5, label: 'magic' }] },
+  { text: '  \u2514\u2500\u2500 {3} findings reclassified by AI', color: 'text-emerald-400', delay: 1.75, numbers: [{ value: 3, label: 'reclass' }] },
+  { text: '', color: '', delay: 1.85, numbers: [] as { value: number; label: string }[] },
+  { text: '  Report: .aigiscode/aigiscode-report.md', color: 'text-zinc-500', delay: 1.95, numbers: [] as { value: number; label: string }[] },
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -70,7 +76,13 @@ function HeroSection() {
 
   return (
     <section className="relative py-20 md:py-32 lg:py-40 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* Particle constellation background */}
+      <ParticleField count={35} connectionDistance={100} className="opacity-60" />
+
+      {/* Animated shield SVG */}
+      <ShieldBackground />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
         {/* Title */}
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
@@ -186,19 +198,16 @@ function TrustedBar() {
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Feature Bento Grid                                                        */
+/*  Feature Bento Grid — anime.js stagger wave on scroll                      */
 /* -------------------------------------------------------------------------- */
 
 function FeatureCard({ featureKey, Icon, index }: { featureKey: string; Icon: React.ElementType; index: number }) {
   const { t } = useTranslation();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative rounded-2xl border border-zinc-200/50 dark:border-white/5 bg-white/50 dark:bg-white/[0.02] backdrop-blur-xl p-6 overflow-hidden transition-shadow hover:shadow-lg hover:shadow-indigo-500/5"
+    <div
+      data-feature-card
+      className="group relative rounded-2xl border border-zinc-200/50 dark:border-white/5 bg-white/50 dark:bg-white/[0.02] backdrop-blur-xl p-6 overflow-hidden transition-shadow hover:shadow-lg hover:shadow-indigo-500/5 opacity-0"
     >
       {/* Hover glow */}
       <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 pointer-events-none" />
@@ -214,12 +223,50 @@ function FeatureCard({ featureKey, Icon, index }: { featureKey: string; Icon: Re
           {t(`features.${featureKey}.description`)}
         </p>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
 function FeaturesSection() {
   const { t } = useTranslation();
+  const gridRef = useRef<HTMLDivElement>(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (!gridRef.current || prefersReducedMotion()) {
+      // If reduced motion, just show all cards immediately
+      if (gridRef.current) {
+        gridRef.current.querySelectorAll('[data-feature-card]').forEach((el) => {
+          (el as HTMLElement).style.opacity = '1';
+        });
+      }
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+
+          const cards = gridRef.current!.querySelectorAll('[data-feature-card]');
+          animate(cards, {
+            opacity: [0, 1],
+            scale: [0.85, 1],
+            translateY: [40, 0],
+            duration: 600,
+            delay: stagger(80, { grid: [3, 2], from: 'first' }),
+            ease: 'outQuart',
+          });
+
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.15, rootMargin: '-60px' },
+    );
+
+    observer.observe(gridRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section id="features" className="py-20 md:py-32">
@@ -239,7 +286,7 @@ function FeaturesSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {featureKeys.map(({ key, Icon }, index) => (
             <FeatureCard key={key} featureKey={key} Icon={Icon} index={index} />
           ))}
@@ -250,7 +297,7 @@ function FeaturesSection() {
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Pipeline / How It Works                                                   */
+/*  Pipeline / How It Works — with animated SVG connection                    */
 /* -------------------------------------------------------------------------- */
 
 function PipelineStage({ stageKey, index }: { stageKey: string; index: number }) {
@@ -265,7 +312,7 @@ function PipelineStage({ stageKey, index }: { stageKey: string; index: number })
       className="flex flex-col items-center text-center flex-1 min-w-0"
     >
       {/* Number circle */}
-      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-display font-bold text-sm shadow-lg shadow-indigo-500/25 flex-shrink-0">
+      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-display font-bold text-sm shadow-lg shadow-indigo-500/25 flex-shrink-0 relative z-10">
         {index + 1}
       </div>
       <h3 className="mt-4 font-display font-semibold text-zinc-900 dark:text-white text-sm md:text-base">
@@ -278,23 +325,10 @@ function PipelineStage({ stageKey, index }: { stageKey: string; index: number })
   );
 }
 
-function PipelineConnector({ index }: { index: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scaleX: 0 }}
-      whileInView={{ opacity: 1, scaleX: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.12 + 0.06 }}
-      className="hidden lg:flex items-start pt-6 flex-shrink-0"
-      aria-hidden="true"
-    >
-      <div className="w-8 xl:w-12 h-px bg-gradient-to-r from-indigo-500/40 to-purple-500/40" />
-    </motion.div>
-  );
-}
-
 function PipelineSection() {
   const { t } = useTranslation();
+  const pipelineRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(pipelineRef, { once: true, margin: '-100px' });
 
   return (
     <section id="how-it-works" className="py-20 md:py-32">
@@ -314,13 +348,11 @@ function PipelineSection() {
           </p>
         </motion.div>
 
-        {/* Desktop: horizontal flow */}
-        <div className="hidden lg:flex items-start justify-center">
+        {/* Desktop: horizontal flow with animated SVG line */}
+        <div ref={pipelineRef} className="hidden lg:flex items-start justify-center relative">
+          <PipelineSVG stageCount={pipelineStageKeys.length} isInView={isInView} />
           {pipelineStageKeys.map((key, i) => (
-            <div key={key} className="contents">
-              <PipelineStage stageKey={key} index={i} />
-              {i < pipelineStageKeys.length - 1 && <PipelineConnector index={i} />}
-            </div>
+            <PipelineStage key={key} stageKey={key} index={i} />
           ))}
         </div>
 
@@ -336,26 +368,136 @@ function PipelineSection() {
 }
 
 /* -------------------------------------------------------------------------- */
-/*  Terminal Demo                                                             */
+/*  Terminal Demo — Typewriter + Counter Animations                           */
 /* -------------------------------------------------------------------------- */
 
-function TerminalLine({ line, index }: { line: (typeof terminalLines)[number]; index: number }) {
+/**
+ * Renders a single terminal line with character-by-character typewriter.
+ * Numbers wrapped in {N} are animated with count-up.
+ */
+function TypewriterLine({
+  line,
+  startTime,
+}: {
+  line: (typeof terminalLines)[number];
+  startTime: number;
+}) {
+  const lineRef = useRef<HTMLDivElement>(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    if (!lineRef.current || hasAnimated.current) return;
+    if (!line.text) return;
+
+    hasAnimated.current = true;
+
+    if (prefersReducedMotion()) {
+      // Just show the text immediately with numbers replaced
+      const text = line.text.replace(/\{(\d+)\}/g, '$1');
+      lineRef.current.textContent = text;
+      return;
+    }
+
+    const el = lineRef.current;
+
+    // Parse the text: split on {N} patterns for counter animation
+    const parts = line.text.split(/(\{\d+\})/g);
+    el.innerHTML = '';
+
+    const spans: HTMLSpanElement[] = [];
+    const counterSpans: { span: HTMLSpanElement; target: number }[] = [];
+
+    for (const part of parts) {
+      const numMatch = part.match(/^\{(\d+)\}$/);
+      if (numMatch) {
+        // This is a number to animate
+        const span = document.createElement('span');
+        span.textContent = '0';
+        span.style.opacity = '0';
+        span.style.display = 'inline';
+        el.appendChild(span);
+        spans.push(span);
+        counterSpans.push({ span, target: parseInt(numMatch[1], 10) });
+      } else {
+        // Regular characters — wrap each in a span
+        for (const char of part) {
+          const span = document.createElement('span');
+          span.textContent = char;
+          span.style.opacity = '0';
+          span.style.display = 'inline';
+          el.appendChild(span);
+          spans.push(span);
+        }
+      }
+    }
+
+    // Typewriter: reveal characters one by one
+    const charDelay = Math.min(30, 600 / Math.max(spans.length, 1));
+
+    const tl = createTimeline({
+      autoplay: true,
+      delay: startTime,
+    });
+
+    // Reveal all character spans
+    tl.add(spans, {
+      opacity: [0, 1],
+      duration: 50,
+      delay: stagger(charDelay),
+      ease: 'out',
+    });
+
+    // After typewriter finishes, count up the numbers
+    for (const { span, target } of counterSpans) {
+      const obj = { val: 0 };
+      // Start counter a bit after the character is revealed
+      animate(obj, {
+        val: target,
+        duration: 800,
+        delay: startTime + spans.indexOf(span) * charDelay + 100,
+        ease: 'outExpo',
+        onUpdate: () => {
+          span.textContent = String(Math.round(obj.val));
+        },
+      });
+    }
+
+    return () => {
+      tl.pause();
+    };
+  }, [line.text, startTime]);
+
+  if (!line.text) {
+    return <div className={`${line.color} whitespace-pre`}>{'\u00A0'}</div>;
+  }
+
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -8 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.3, delay: line.delay }}
-      className={`${line.color} whitespace-pre`}
-    >
-      {line.text || '\u00A0'}
-    </motion.div>
+    <div ref={lineRef} className={`${line.color} whitespace-pre`} />
+  );
+}
+
+function TerminalCursor({ visible }: { visible: boolean }) {
+  if (!visible) return null;
+
+  return (
+    <span className="inline-block w-[8px] h-[14px] bg-zinc-300 animate-pulse ml-0.5 align-middle" />
   );
 }
 
 function TerminalDemo() {
   const termRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(termRef, { once: true, margin: '-100px' });
+  const [showCursor, setShowCursor] = useState(false);
+
+  useEffect(() => {
+    if (isInView) {
+      setShowCursor(true);
+      // Hide cursor after all lines have been typed
+      const totalTime = terminalLines[terminalLines.length - 1].delay * 1000 + 2000;
+      const timer = setTimeout(() => setShowCursor(false), totalTime);
+      return () => clearTimeout(timer);
+    }
+  }, [isInView]);
 
   return (
     <section className="py-20 md:py-32">
@@ -379,7 +521,18 @@ function TerminalDemo() {
           {/* Terminal content */}
           <div className="p-5 md:p-6 font-mono text-xs md:text-sm leading-relaxed overflow-x-auto">
             {isInView &&
-              terminalLines.map((line, i) => <TerminalLine key={i} line={line} index={i} />)}
+              terminalLines.map((line, i) => (
+                <TypewriterLine
+                  key={i}
+                  line={line}
+                  startTime={line.delay * 1000}
+                />
+              ))}
+            {showCursor && (
+              <div className="inline-flex items-center">
+                <TerminalCursor visible={showCursor} />
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
