@@ -2,7 +2,7 @@
 
 ## Backlog
 - [ ] Extend Rust-specific external analysis using a large reference workspace: evaluate `cargo-audit` vs `osv-scanner` overlap for Rust SCA, decide whether `cargo-geiger` adds enough value as an optional unsafe-surface signal, and tune defaults around the shipped `cargo-deny`/`cargo-clippy` integrations.
-- [ ] Calibrate Rust audit coverage against `zed`, using the cloned workspace baseline (`1725` supported source files today) to improve Rust SCA, lint, and architecture fidelity.
+- [ ] Calibrate Rust audit coverage against `zed`, using the cloned workspace baseline (`1725` supported source files, `1706` Rust files, `60695` symbols, `41722` dependencies after the first-pass Rust extractor) to improve Rust SCA, lint, and architecture fidelity.
 - [ ] Add end-to-end coverage for AI review/report serialization using a reproducible local backend harness instead of stubs.
 - [ ] Evaluate optional integration points for Semgrep, CodeQL, gitleaks/trufflehog, and dependency vulnerability scanners.
 - [ ] Rename remaining internal/backend identifiers that still say `codex_sdk` even though the Python path uses the OpenAI Responses API directly.
@@ -39,6 +39,7 @@
 ## Blocked
 
 ## Done
+- [x] Add first-pass Rust symbol and dependency extraction so indexed `.rs` files contribute basic graph analysis and import coverage
 - [x] Add `cargo-deny` as a first-class external analyzer for Rust advisories/licenses/bans/sources and normalize its findings into AigisCode reports
 - [x] Add `cargo-clippy` as a first-class external analyzer for Rust workspaces
 - [x] Record the current Rust coverage baseline for `../zed` (`1725` supported source files in the current clone) so future Rust audit work has a real regression target
